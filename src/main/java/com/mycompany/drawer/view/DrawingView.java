@@ -4,7 +4,7 @@ import com.mycompany.drawer.App;
 import com.mycompany.drawer.model.ShapeFactory;
 import com.mycompany.drawer.model.ShapeData;
 import com.mycompany.drawer.model.ShapeEnum;
-import com.mycompany.drawer.model.ShapeSaver;
+import com.mycompany.drawer.controller.ShapeSaver;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -14,11 +14,8 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.stage.FileChooser;
 
 /**
  * Класс для создания окна приложения и отображения графики

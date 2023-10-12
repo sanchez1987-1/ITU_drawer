@@ -1,4 +1,6 @@
-package com.mycompany.drawer.model;
+package com.mycompany.drawer.controller;
+
+import com.mycompany.drawer.model.ShapeData;
 
 import java.io.*;
 import java.util.ArrayList;

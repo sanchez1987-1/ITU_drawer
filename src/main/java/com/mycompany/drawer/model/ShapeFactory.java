@@ -1,8 +1,6 @@
 package com.mycompany.drawer.model;
 
-import com.mycompany.drawer.model.ShapeData;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 public class ShapeFactory {
 
