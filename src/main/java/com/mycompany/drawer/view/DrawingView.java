@@ -11,6 +11,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -20,8 +21,11 @@ import java.util.List;
 /**
  * Класс для создания окна приложения и отображения графики
  */
+
+
 public class DrawingView extends App {
     private Stage primaryStage;
+    private int numberCorners = 5; // По умолчанию 5 вершин
 
     private ShapeEnum currentShape = ShapeEnum.CIRCLE;
     private Color currentColor = Color.BLACK;
@@ -34,10 +38,14 @@ public class DrawingView extends App {
 
     public DrawingView(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        TextField cornersField = new TextField("5"); // Значение по умолчанию
+        cornersField.setPromptText("Количество вершин");
+        cornersField.setLayoutY(650);
+        cornersField.setLayoutX(750);
 
         primaryStage.setTitle("Рисование фигур");
         Group root = new Group();
-        Canvas canvas = new Canvas(800, 600);
+        Canvas canvas = new Canvas(1200, 1000);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Обработчик события при нажатии кнопки мыши
@@ -56,7 +64,6 @@ public class DrawingView extends App {
             redrawShapes(gc);
         });
 
-        // Обработчик события при перемещении мыши (для рисования)
         Button circleButton = new Button("Круг");
         circleButton.setOnAction(e -> currentShape = ShapeEnum.CIRCLE);
         Button lineButton = new Button("Линия");
@@ -65,7 +72,7 @@ public class DrawingView extends App {
         squareButton.setOnAction(e -> currentShape = ShapeEnum.SQUARE);
         Button rectangleButton = new Button("Прямоугольник");
         rectangleButton.setOnAction(e -> currentShape = ShapeEnum.RECTANGLE);
-        Button starButton = new Button("Звездочка");
+        Button starButton = new Button("Звезда");
         starButton.setOnAction(e -> currentShape = ShapeEnum.STAR);
 
         Button saveButton = new Button("Сохранить");
@@ -81,7 +88,21 @@ public class DrawingView extends App {
             currentColor = colorPicker.getValue();
         });
 
-        root.getChildren().addAll(canvas, circleButton, lineButton, squareButton, rectangleButton, starButton, colorPicker, saveButton, loadButton);
+        Button drawButton = new Button("Произвольная звезда");
+        drawButton.setLayoutY(650);
+        drawButton.setLayoutX(650);
+
+        drawButton.setOnAction(e -> {
+            try {
+                numberCorners = Integer.parseInt(cornersField.getText());
+                redrawShapes(gc);
+            } catch (NumberFormatException ex) {
+                // Обработка ошибки, если пользователь ввел некорректное значение
+                // Можно вывести сообщение об ошибке
+            }
+        });
+
+        root.getChildren().addAll(canvas, circleButton, lineButton, squareButton, rectangleButton, starButton, colorPicker, saveButton, loadButton, cornersField, drawButton);
 
         circleButton.setLayoutY(610);
         circleButton.setLayoutX(10);
@@ -110,8 +131,31 @@ public class DrawingView extends App {
     private void redrawShapes(GraphicsContext gc) {
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         for (ShapeData shape : shapes) {
-            ShapeFactory.createShape(gc, shape); // Используем ShapeFactory для создания фигур
+            if (shape.getShape() == ShapeEnum.RANDOM_STAR) {
+                drawStar(gc, shape.getStartX(), shape.getStartY(), shape.getEndX(), shape.getEndY(), shape.getColor());
+            } else {
+                ShapeFactory.createShape(gc, shape);
+            }
         }
+    }
+
+    private void drawStar(GraphicsContext gc, double startX, double startY, double endX, double endY, Color color) {
+        double centerX = (endX + startX) / 2;
+        double centerY = (endY + startY) / 2;
+        double radius = Math.min(Math.abs(endX - startX), Math.abs(endY - startY)) / 2;
+
+        double[] xPoints = new double[2 * numberCorners];
+        double[] yPoints = new double[2 * numberCorners];
+
+        for (int i = 0; i < 2 * numberCorners; i++) {
+            double angle = Math.toRadians(i * (360.0 / (2 * numberCorners)));
+            double r = (i % 2 == 0) ? radius : radius / 2.0; // Чередование больших и малых радиусов
+            xPoints[i] = centerX + r * Math.cos(angle);
+            yPoints[i] = centerY + r * Math.sin(angle);
+        }
+
+        gc.setStroke(color);
+        gc.strokePolygon(xPoints, yPoints, 2 * numberCorners);
     }
 
 }
