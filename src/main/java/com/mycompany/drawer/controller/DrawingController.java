@@ -10,6 +10,10 @@ import javafx.stage.Stage;
 public class DrawingController extends App {
 
     public DrawingController(Stage primaryStage) {
-        new DrawingView(primaryStage);
+        try {
+            new DrawingView(primaryStage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

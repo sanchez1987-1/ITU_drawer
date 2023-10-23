@@ -2,13 +2,16 @@ package com.mycompany.drawer.model;
 
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
+
 /**
  * Класс для хранения информации о фигуре
  */
-public class ShapeData {
+public class ShapeData implements Serializable {
     private ShapeEnum shape;
     private double startX, startY, endX, endY;
-    private Color color;
+    private String color;
+    private boolean isFillEnabled; // Флаг для отслеживания состояния заливки
 
     public ShapeEnum getShape() {
         return shape;
@@ -30,16 +33,48 @@ public class ShapeData {
         return endY;
     }
 
-    public Color getColor() {
-        return color;
+    public String getColor() { return color; }
+    public boolean getIsFillEnabled() { return isFillEnabled; }
+
+    public void setShape(ShapeEnum shape) {
+        this.shape = shape;
     }
 
-    public ShapeData(ShapeEnum shape, double startX, double startY, double endX, double endY, Color color) {
+    public void setStartX(double startX) {
+        this.startX = startX;
+    }
+
+    public void setStartY(double startY) {
+        this.startY = startY;
+    }
+
+    public void setEndX(double endX) {
+        this.endX = endX;
+    }
+
+    public void setEndY(double endY) {
+        this.endY = endY;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public boolean isFillEnabled() {
+        return isFillEnabled;
+    }
+
+    public void setFillEnabled(boolean fillEnabled) {
+        isFillEnabled = fillEnabled;
+    }
+
+    public ShapeData(ShapeEnum shape, double startX, double startY, double endX, double endY, String color, boolean isFillEnabled) {
         this.shape = shape;
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
         this.color = color;
+        this.isFillEnabled = isFillEnabled;
     }
 }
