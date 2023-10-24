@@ -178,24 +178,46 @@ public class DrawingView extends App {
 
     private void loadShapesFromFile() {
         // Загрузка данных
-        DrawingData loadedData = loadDrawingData(new File("C:\\JavaFX\\drawing_data.ser"));
-        shapes.clear();
-        shapes.addAll(loadedData.getShapes()); // Обновление списка фигур из загруженных данных
-        redrawShapes(); // Перерисовать фигуры
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shape files *.dat", "*.dat"));
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            // Задайте имя файла на основе выбора пользователя
+            String fileName = file.getAbsolutePath();
+            try {
+                DrawingData loadedData = loadDrawingData(new File(fileName));
+                shapes.clear();
+                shapes.addAll(loadedData.getShapes()); // Обновление списка фигур из загруженных данных
+                redrawShapes(); // Перерисовать фигуры
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void saveShapesToFile() {
         // Сохранение данных
-        DrawingData dataToSave = new DrawingData();
-        dataToSave.getShapes().addAll(shapes); // shapes - список ваших фигур
-        saveDrawingData(dataToSave, new File("C:\\JavaFX\\drawing_data.ser"));
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shape files *.dat", "*.dat"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            // Задайте имя файла на основе выбора пользователя
+            String fileName = file.getAbsolutePath();
+            try {
+                DrawingData dataToSave = new DrawingData();
+                dataToSave.getShapes().addAll(shapes); // shapes - список ваших фигур
+                saveDrawingData(dataToSave, new File(fileName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void saveAsImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JPEG files (*.png)", "*.png"));
         fileChooser.setInitialFileName("drawing.png");
-//        File file = fileChooser.showSaveDialog(primaryStage);
         File file = fileChooser.showSaveDialog(null);
 
         if (file != null) {
