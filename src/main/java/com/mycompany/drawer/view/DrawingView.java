@@ -28,6 +28,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 
 import static com.mycompany.drawer.controller.ColorConverter.*;
+import static com.mycompany.drawer.model.ShapeEnum.CIRCLE;
 
 /**
  * Класс для создания окна приложения и отображения графики
@@ -35,7 +36,7 @@ import static com.mycompany.drawer.controller.ColorConverter.*;
 
 public class DrawingView extends App {
     private Stage primaryStage;
-    private ShapeEnum currentShape = ShapeEnum.CIRCLE;
+    private ShapeEnum currentShape = CIRCLE;
     private String currentColor = colorToString(Color.BLACK);
     private double startX, startY, endX, endY, offsetX, offsetY;
     private boolean isDrawing = false;
@@ -43,6 +44,8 @@ public class DrawingView extends App {
     private Pane drawingPane;
     private boolean isFillEnabled = false; // Флаг для отслеживания состояния заливки
     private boolean isMoveEnabled = false; // Флаг для отслеживания перемещения
+    private boolean isConvertMode = false; // Флаг для отслеживания режима конвертирования
+
 
     public DrawingView(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -101,7 +104,7 @@ public class DrawingView extends App {
 
         VBox editButArea = new VBox();
 
-        Button circleButton = createToolButton("Круг", ShapeEnum.CIRCLE);
+        Button circleButton = createToolButton("Круг", CIRCLE);
         Button lineButton = createToolButton("Линия", ShapeEnum.LINE);
         Button squareButton = createToolButton("Квадрат", ShapeEnum.SQUARE);
         Button rectangleButton = createToolButton("Прямоугольник", ShapeEnum.RECTANGLE);
@@ -121,13 +124,17 @@ public class DrawingView extends App {
                 editButArea.setDisable(true);
             }
         });
+        ToggleButton convertButton = new ToggleButton("Конвертировать");
+        convertButton.setOnAction(e -> {
+            isConvertMode = convertButton.isSelected();
+        });
 
         ColorPicker colorPicker = new ColorPicker(); // Обработчик события выбора цвета
         colorPicker.setOnAction(e -> {
             currentColor = colorToString(colorPicker.getValue());
         });
 
-        editButArea.getChildren().addAll(circleButton, lineButton, squareButton, rectangleButton, starButton, colorPicker, fillButton);
+        editButArea.getChildren().addAll(circleButton, lineButton, squareButton, rectangleButton, starButton, colorPicker, fillButton, convertButton);
 
         toolsContainer.getChildren().addAll(editButArea, moveButton);
 
@@ -139,7 +146,12 @@ public class DrawingView extends App {
         button.setMaxWidth(Double.MAX_VALUE);
 
         button.setOnAction(e -> {
-            currentShape = shapeType;
+            if(isConvertMode) {
+                ShapeData shape = shapes.get(shapes.size() - 1);
+                ShapeFactory.convertShape(drawingPane, shape, shapeType);
+            } else {
+                currentShape = shapeType;
+            }
         });
 
         return button;

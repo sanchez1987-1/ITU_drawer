@@ -1,5 +1,6 @@
 package com.mycompany.drawer.model;
 
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class ShapeData implements Serializable {
     private double startX, startY, endX, endY;
     private String color;
     private boolean isFillEnabled; // Флаг для отслеживания состояния заливки
+    private transient Node shapeNode; // Добавляем поле Node
 
     public ShapeEnum getShape() {
         return shape;
@@ -68,6 +70,14 @@ public class ShapeData implements Serializable {
         isFillEnabled = fillEnabled;
     }
 
+    public Node getShapeNode() {
+        return shapeNode;
+    }
+
+    public void setShapeNode(Node shapeNode) {
+        this.shapeNode = shapeNode;
+    }
+
     public ShapeData(ShapeEnum shape, double startX, double startY, double endX, double endY, String color, boolean isFillEnabled) {
         this.shape = shape;
         this.startX = startX;
@@ -76,5 +86,6 @@ public class ShapeData implements Serializable {
         this.endY = endY;
         this.color = color;
         this.isFillEnabled = isFillEnabled;
+        this.shapeNode = null; // Изначально у нас нет узла
     }
 }

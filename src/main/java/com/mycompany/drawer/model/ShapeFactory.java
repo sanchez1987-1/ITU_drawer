@@ -1,5 +1,6 @@
 package com.mycompany.drawer.model;
 
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -20,6 +21,8 @@ public class ShapeFactory {
             color = Color.TRANSPARENT; // Выключаем заливку
         }
 
+        Node shapeNode = null; // Инициализируем узел
+
         switch (shapeData.getShape()) {
             case CIRCLE:
                 Circle circle = new Circle();
@@ -28,7 +31,7 @@ public class ShapeFactory {
                 circle.setRadius(Math.abs(shapeData.getEndX() - shapeData.getStartX()) / 2);
                 circle.setStroke(stringToColor(shapeData.getColor()));
                 circle.setFill(color);
-                drawingPane.getChildren().add(circle);
+                shapeNode = circle; // Устанавливаем узел как круг
                 break;
             case LINE:
                 Line line = new Line();
@@ -37,7 +40,7 @@ public class ShapeFactory {
                 line.setEndX(shapeData.getEndX());
                 line.setEndY(shapeData.getEndY());
                 line.setStroke(stringToColor(shapeData.getColor()));
-                drawingPane.getChildren().add(line);
+                shapeNode = line; // Устанавливаем узел как линию
                 break;
             case SQUARE:
                 Rectangle square = new Rectangle();
@@ -48,7 +51,7 @@ public class ShapeFactory {
                 square.setHeight(size);
                 square.setStroke(stringToColor(shapeData.getColor()));
                 square.setFill(color);
-                drawingPane.getChildren().add(square);
+                shapeNode = square; // Устанавливаем узел как квадрат
                 break;
             case RECTANGLE:
                 Rectangle rectangle = new Rectangle();
@@ -58,7 +61,7 @@ public class ShapeFactory {
                 rectangle.setHeight(Math.abs(shapeData.getEndY() - shapeData.getStartY()));
                 rectangle.setStroke(stringToColor(shapeData.getColor()));
                 rectangle.setFill(color);
-                drawingPane.getChildren().add(rectangle);
+                shapeNode = rectangle; // Устанавливаем узел как прямоугольник
                 break;
             case STAR:
                 Polygon star = new Polygon();
@@ -75,8 +78,23 @@ public class ShapeFactory {
 
                 star.setStroke(stringToColor(shapeData.getColor()));
                 star.setFill(color);
-                drawingPane.getChildren().add(star);
+                shapeNode = star; // Устанавливаем узел как звезду
                 break;
         }
+
+        shapeData.setShapeNode(shapeNode); // Устанавливаем узел для фигуры
+        drawingPane.getChildren().add(shapeNode); // Добавляем узел в панель
+    }
+
+    public static void convertShape(Pane drawingPane, ShapeData shapeData, ShapeEnum newShape) {
+        // Удалите текущую фигуру из Pane
+//        drawingPane.getChildren().removeIf(node -> node.equals(shapeData.getShapeNode()));
+        drawingPane.getChildren().removeIf(node -> node.equals(shapeData.getShapeNode()));
+
+        // Измените тип фигуры на новый
+        shapeData.setShape(newShape);
+
+        // Создайте новую фигуру с новым типом
+        createShape(drawingPane, shapeData, shapeData.getIsFillEnabled());
     }
 }
