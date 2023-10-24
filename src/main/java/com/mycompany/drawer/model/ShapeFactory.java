@@ -41,10 +41,11 @@ public class ShapeFactory {
                 break;
             case SQUARE:
                 Rectangle square = new Rectangle();
+                double size = Math.min(Math.abs(shapeData.getEndX() - shapeData.getStartX()), Math.abs(shapeData.getEndY() - shapeData.getStartY()));
                 square.setX(Math.min(shapeData.getStartX(), shapeData.getEndX()));
                 square.setY(Math.min(shapeData.getStartY(), shapeData.getEndY()));
-                square.setWidth(Math.abs(shapeData.getEndX() - shapeData.getStartX()));
-                square.setHeight(Math.abs(shapeData.getEndY() - shapeData.getStartY()));
+                square.setWidth(size);
+                square.setHeight(size);
                 square.setStroke(stringToColor(shapeData.getColor()));
                 square.setFill(color);
                 drawingPane.getChildren().add(square);
