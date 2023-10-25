@@ -8,7 +8,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.paint.Color;
 
-import static com.mycompany.drawer.controller.ColorConverter.*;
+import static com.mycompany.drawer.controller.UtilController.*;
 
 public class ShapeFactory {
     public static void createShape(Pane drawingPane, ShapeData shapeData, boolean isFillEnabled) {
@@ -84,17 +84,5 @@ public class ShapeFactory {
 
         shapeData.setShapeNode(shapeNode); // Устанавливаем узел для фигуры
         drawingPane.getChildren().add(shapeNode); // Добавляем узел в панель
-    }
-
-    public static void convertShape(Pane drawingPane, ShapeData shapeData, ShapeEnum newShape) {
-        // Удалите текущую фигуру из Pane
-//        drawingPane.getChildren().removeIf(node -> node.equals(shapeData.getShapeNode()));
-        drawingPane.getChildren().removeIf(node -> node.equals(shapeData.getShapeNode()));
-
-        // Измените тип фигуры на новый
-        shapeData.setShape(newShape);
-
-        // Создайте новую фигуру с новым типом
-        createShape(drawingPane, shapeData, shapeData.getIsFillEnabled());
     }
 }

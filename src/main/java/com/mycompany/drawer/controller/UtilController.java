@@ -1,8 +1,13 @@
 package com.mycompany.drawer.controller;
 
+import com.mycompany.drawer.model.ShapeData;
+import com.mycompany.drawer.model.ShapeEnum;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-public class ColorConverter {
+import static com.mycompany.drawer.model.ShapeFactory.createShape;
+
+public class UtilController {
 
     // Преобразование Color в строку в формате #RRGGBBAA
     public static String colorToString(Color color) {
@@ -33,5 +38,17 @@ public class ColorConverter {
         int a = Integer.parseInt(colorString.substring(6, 8), 16);
 
         return Color.rgb(r, g, b, a / 255.0);
+    }
+
+    // Преобразуем один вид фигуры в другой
+    public static void convertShape(Pane drawingPane, ShapeData shapeData, ShapeEnum newShape) {
+        // Удалите текущую фигуру из Pane
+        drawingPane.getChildren().removeIf(node -> node.equals(shapeData.getShapeNode()));
+
+        // Измените тип фигуры на новый
+        shapeData.setShape(newShape);
+
+        // Создайте новую фигуру с новым типом
+        createShape(drawingPane, shapeData, shapeData.getIsFillEnabled());
     }
 }

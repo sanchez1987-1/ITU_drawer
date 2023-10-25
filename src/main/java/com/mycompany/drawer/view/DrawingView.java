@@ -7,10 +7,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
-import static com.mycompany.drawer.controller.ColorConverter.*;
-import static com.mycompany.drawer.model.ShapeEnum.CIRCLE;
-
 /**
  * Класс для создания окна приложения и отображения графики
  */

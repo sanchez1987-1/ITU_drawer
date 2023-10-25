@@ -4,6 +4,7 @@ import com.mycompany.drawer.App;
 import com.mycompany.drawer.model.ShapeData;
 import com.mycompany.drawer.model.ShapeEnum;
 import com.mycompany.drawer.model.ShapeFactory;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -12,7 +13,8 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mycompany.drawer.controller.ColorConverter.colorToString;
+import static com.mycompany.drawer.controller.UtilController.colorToString;
+import static com.mycompany.drawer.controller.UtilController.convertShape;
 import static com.mycompany.drawer.model.ShapeEnum.CIRCLE;
 
 /**
@@ -25,6 +27,7 @@ public class DrawingController extends App {
     protected Pane drawingPane;
     private FileController fc = new FileController();
     private String currentColor = colorToString(Color.BLACK);
+    private String currentBgColor = colorToString(Color.TRANSPARENT);
     private double startX, startY, endX, endY, offsetX, offsetY;
     private boolean isFillEnabled = false; // Флаг для отслеживания состояния заливки
     private boolean isMoveEnabled = false; // Флаг для отслеживания перемещения
@@ -34,9 +37,9 @@ public class DrawingController extends App {
         button.setMaxWidth(Double.MAX_VALUE);
 
         button.setOnAction(e -> {
-            if(isConvertMode) {
+            if (isConvertMode && shapes.size() > 0) {
                 ShapeData shape = shapes.get(shapes.size() - 1);
-                ShapeFactory.convertShape(drawingPane, shape, shapeType);
+                convertShape(drawingPane, shape, shapeType);
             } else {
                 currentShape = shapeType;
             }
@@ -57,9 +60,9 @@ public class DrawingController extends App {
         VBox menuContainer = new VBox();
         menuContainer.getChildren().addAll(menuBar);
 
-        saveItem.setOnAction(e -> fc.saveShapesToFile(shapes));
+        saveItem.setOnAction(e -> fc.saveShapesToFile(shapes,currentBgColor));
         openItem.setOnAction(e -> {
-            fc.loadShapesFromFile(shapes);
+            currentBgColor = fc.loadShapesFromFile(shapes);
             redrawShapes();
         });
         exportItem.setOnAction(e -> fc.saveAsImage(drawingPane));
@@ -69,6 +72,7 @@ public class DrawingController extends App {
 
     protected VBox createToolsContainer() {
         VBox toolsContainer = new VBox();
+        VBox editButArea = new VBox();
         toolsContainer.setSpacing(5);
         toolsContainer.setStyle("-fx-background-color: white;"); // Установка цвета фона
 
@@ -85,27 +89,25 @@ public class DrawingController extends App {
             if (!isMoveEnabled) {
                 shapes.add(new ShapeData(currentShape, startX, startY, endX, endY, currentColor, isFillEnabled));
             } else {
-                offsetX = endX-startX;
-                offsetY = endY-startY;
-                if (shapes.size()>0) {
+                offsetX = endX - startX;
+                offsetY = endY - startY;
+                if (shapes.size() > 0) {
                     ShapeData shape = shapes.get(shapes.size() - 1);
-                    shape.setStartX(shape.getStartX()+offsetX);
-                    shape.setStartY(shape.getStartY()+offsetY);
-                    shape.setEndX(shape.getEndX()+offsetX);
-                    shape.setEndY(shape.getEndY()+offsetY);
+                    shape.setStartX(shape.getStartX() + offsetX);
+                    shape.setStartY(shape.getStartY() + offsetY);
+                    shape.setEndX(shape.getEndX() + offsetX);
+                    shape.setEndY(shape.getEndY() + offsetY);
                 }
             }
             redrawShapes();
         });
-
-        VBox editButArea = new VBox();
 
         Button circleButton = createToolButton("Круг", CIRCLE);
         Button lineButton = createToolButton("Линия", ShapeEnum.LINE);
         Button squareButton = createToolButton("Квадрат", ShapeEnum.SQUARE);
         Button rectangleButton = createToolButton("Прямоугольник", ShapeEnum.RECTANGLE);
         Button starButton = createToolButton("Звездочка", ShapeEnum.STAR);
-        ToggleButton fillButton = new ToggleButton("Заливка");
+        ToggleButton fillButton = new ToggleButton("Заливка фигуры");
         fillButton.setSelected(false); // По умолчанию без заливки
         fillButton.setOnAction(e -> {
             isFillEnabled = fillButton.isSelected();
@@ -114,23 +116,37 @@ public class DrawingController extends App {
         moveButton.setSelected(false); // По умолчанию без заливки
         moveButton.setOnAction(e -> {
             isMoveEnabled = moveButton.isSelected();
-            if(!isMoveEnabled) {
-                editButArea.setDisable(false);
-            } else {
-                editButArea.setDisable(true);
-            }
+            editButArea.setDisable(isMoveEnabled);
         });
         ToggleButton convertButton = new ToggleButton("Конвертировать");
         convertButton.setOnAction(e -> {
             isConvertMode = convertButton.isSelected();
         });
 
-        ColorPicker colorPicker = new ColorPicker(); // Обработчик события выбора цвета
+        Label lblColorPicker = new Label("Заливка фигуры");
+        lblColorPicker.setPadding(new Insets(10, 0, 0, 4));
+        ColorPicker colorPicker = new ColorPicker(Color.BLACK); // Обработчик события выбора цвета
         colorPicker.setOnAction(e -> {
             currentColor = colorToString(colorPicker.getValue());
         });
 
-        editButArea.getChildren().addAll(circleButton, lineButton, squareButton, rectangleButton, starButton, colorPicker, fillButton, convertButton);
+        Label lblBgPicker = new Label("Заливка фона");
+        lblBgPicker.setPadding(new Insets(10, 0, 0, 4));
+        ColorPicker bgPicker = new ColorPicker(Color.TRANSPARENT); // Обработчик события выбора цвета фона
+        bgPicker.setOnAction(e -> {
+            currentBgColor = colorToString(bgPicker.getValue());
+            redrawShapes();
+        });
+        Button bgClear = new Button("Сбросить цвет фона");
+        bgClear.setOnAction(e -> {
+            clearBackground();
+            bgPicker.setValue(Color.TRANSPARENT);
+        });
+
+        Label lblModes = new Label("Переключатели режимов");
+        lblModes.setPadding(new Insets(10, 0, 0, 4));
+
+        editButArea.getChildren().addAll(circleButton, lineButton, squareButton, rectangleButton, starButton, lblColorPicker, colorPicker, lblBgPicker, bgPicker, bgClear, lblModes, fillButton, convertButton);
 
         toolsContainer.getChildren().addAll(editButArea, moveButton);
 
@@ -140,8 +156,18 @@ public class DrawingController extends App {
     // Метод для перерисовки всех сохраненных фигур
     private void redrawShapes() {
         drawingPane.getChildren().clear();
+        setBackground();
+
         for (ShapeData shape : shapes) {
             ShapeFactory.createShape(drawingPane, shape, shape.getIsFillEnabled());
         }
+    }
+
+    private void setBackground() {
+        drawingPane.setStyle("-fx-background-color: " + currentBgColor); // Установите фон
+    }
+
+    private void clearBackground() {
+        drawingPane.setStyle("-fx-background-color: " + colorToString(Color.TRANSPARENT)); // Удалите фон
     }
 }

@@ -15,8 +15,9 @@ import java.io.*;
 import java.util.List;
 
 public class FileController {
-    public void loadShapesFromFile(List<ShapeData> shapes) {
+    public String loadShapesFromFile(List<ShapeData> shapes) {
         // Загрузка данных
+        String bgColor = "";
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shape files *.dat", "*.dat"));
         File file = fileChooser.showOpenDialog(null);
@@ -24,17 +25,19 @@ public class FileController {
             // Задайте имя файла на основе выбора пользователя
             String fileName = file.getAbsolutePath();
             try {
-                DrawingData loadedData = loadDrawingData(new File(fileName));
+                DrawingData dataToLoad = loadDrawingData(new File(fileName));
                 shapes.clear();
-                shapes.addAll(loadedData.getShapes()); // Обновление списка фигур из загруженных данных
+                bgColor = dataToLoad.getBgColor();
+                shapes.addAll(dataToLoad.getShapes()); // Обновление списка фигур из загруженных данных
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
 
+        }
+        return bgColor;
     }
 
-    public void saveShapesToFile(List<ShapeData> shapes) {
+    public void saveShapesToFile(List<ShapeData> shapes, String bgColor) {
         // Сохранение данных
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Shape files *.dat", "*.dat"));
@@ -46,6 +49,7 @@ public class FileController {
             String fileName = file.getAbsolutePath();
             try {
                 dataToSave.getShapes().addAll(shapes); // shapes - список ваших фигур
+                dataToSave.setBgColor(bgColor);
                 saveDrawingData(dataToSave, new File(fileName));
             } catch (Exception e) {
                 e.printStackTrace();

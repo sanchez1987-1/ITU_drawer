@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 
 /**
  * JavaFX App
+ * Приложение для рисования различных фигур
  */
 public class App extends Application {
     protected Stage primaryStage;
