@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import static com.mycompany.drawer.controller.UtilController.colorToString;
 import static com.mycompany.drawer.controller.UtilController.convertShape;
@@ -31,6 +32,7 @@ public class DrawingController extends App {
     private double startX, startY, endX, endY, offsetX, offsetY;
     private boolean isFillEnabled = false; // Флаг для отслеживания состояния заливки
     private boolean isMoveEnabled = false; // Флаг для отслеживания перемещения
+    private Stack<ShapeData> shapeHistory = new Stack<>();
 
     protected Button createToolButton(String text, ShapeEnum shapeType) {
         Button button = new Button(text);
@@ -55,7 +57,6 @@ public class DrawingController extends App {
         MenuItem exportItem = new MenuItem("Сохранить как PNG");
         MenuItem openItem = new MenuItem("Открыть");
         fileMenu.getItems().addAll(saveItem, exportItem, openItem);
-        menuBar.getMenus().add(fileMenu);
 
         VBox menuContainer = new VBox();
         menuContainer.getChildren().addAll(menuBar);
@@ -66,6 +67,13 @@ public class DrawingController extends App {
             redrawShapes();
         });
         exportItem.setOnAction(e -> fc.saveAsImage(drawingPane));
+
+        Menu editMenu = new Menu("Правка");
+        MenuItem undoItem = new MenuItem("Отменить добавление фигуры");
+        undoItem.setOnAction(e -> undoLastShape());
+        editMenu.getItems().addAll(undoItem);
+
+        menuBar.getMenus().addAll(fileMenu,editMenu);
 
         return menuContainer;
     }
@@ -87,7 +95,7 @@ public class DrawingController extends App {
             endX = e.getX();
             endY = e.getY();
             if (!isMoveEnabled) {
-                shapes.add(new ShapeData(currentShape, startX, startY, endX, endY, currentColor, isFillEnabled));
+                addShape(new ShapeData(currentShape, startX, startY, endX, endY, currentColor, isFillEnabled));
             } else {
                 offsetX = endX - startX;
                 offsetY = endY - startY;
@@ -170,4 +178,20 @@ public class DrawingController extends App {
     private void clearBackground() {
         drawingPane.setStyle("-fx-background-color: " + colorToString(Color.TRANSPARENT)); // Удалите фон
     }
+
+    private void addShape(ShapeData shapeData) {
+        shapes.add(shapeData);
+        shapeHistory.push(shapeData); // Добавьте фигуру в историю
+        redrawShapes();
+    }
+
+    private void undoLastShape() {
+        if (!shapeHistory.isEmpty()) {
+            ShapeData removedShape = shapeHistory.pop();
+            shapes.remove(removedShape);
+            redrawShapes();
+        }
+    }
+
+
 }

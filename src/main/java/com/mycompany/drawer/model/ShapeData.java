@@ -1,7 +1,6 @@
 package com.mycompany.drawer.model;
 
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 
 import java.io.Serializable;
 
